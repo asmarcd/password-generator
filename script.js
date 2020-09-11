@@ -15,28 +15,51 @@ let alphaLow = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
 let alphaUp = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
 let specialChar = ["+", "-", "&", "|", "!", "(", ")", "{", "}", "[", "]", "^", "~", "*", "?", ":"];
 let numeric = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-let pwCharSet = [];
 
-// generatepassword triggers the overall function of the app, encompassing all the rest of the code:
-function generatepassword() {
+// The function generatePassword triggers the overall functioning of the app, encompassing almost all the rest of the code.
+function generatePassword() {
 
-  // These are the questions posed to the user to determine the makeup of the password and logs those responses to the console for easier viewing:
-  charNumAns = prompt("How many characters would you like your password to be?", [12]);
+  // These are the questions posed to the user to determine the makeup of the password and logs those responses to the console for easier viewing. 
+
+  // This first question, asking for a number of characters for the password, will stop the user and redo the question if they choose a number outside the 8-128 character parameters. You cannot progress without choosing a number between 8-128.
+  function checkCharNumAns() {
+    charNumAns = prompt("How many characters would you like your password to be?", [12]);
+  };
+  checkCharNumAns();
+  while (charNumAns < 8 || charNumAns > 128) {
+    alert('Password must be between 8 and 128 characters. Try again.');
+    checkCharNumAns();
+  };
+
   console.log(`PW Characters: ${charNumAns}`);
 
-  caseUpAns = confirm('Do you want to include upper case letters? Press OK for Yes, Cancel for No.');
-  console.log(`Upper case letters: ${caseUpAns}`);
+  // This establishes a function to ask the remaining questions, and then calls it. If the user chooses no character types, they recieve an alert, and the function is called again. You cannot progress without choosing at least one character type. This is the user's final interaction with the page.
+  function checkCharTypes() {
 
-  caseLowAns = confirm('Do you want to include lower case letters? Press OK for Yes, Cancel for No.');
-  console.log(`Lower case letters: ${caseLowAns}`);
+    caseUpAns = confirm('Do you want to include upper case letters? Press OK for Yes, Cancel for No.');
+    console.log(`Upper case letters: ${caseUpAns}`);
 
-  numericCharAns = confirm('Do you want to include numbers? Press OK for Yes, Cancel for No.');
-  console.log(`Numbers: ${numericCharAns}`);
+    caseLowAns = confirm('Do you want to include lower case letters? Press OK for Yes, Cancel for No.');
+    console.log(`Lower case letters: ${caseLowAns}`);
 
-  specialCharAns = confirm('Do you want to include special characters? Press OK for Yes, Cancel for No.');
-  console.log(`Special Characters: ${specialCharAns}`);
+    numericCharAns = confirm('Do you want to include numbers? Press OK for Yes, Cancel for No.');
+    console.log(`Numbers: ${numericCharAns}`);
 
-  // these if statements use push mergers to build the final array of usable characters based on the user's answers:
+    specialCharAns = confirm('Do you want to include special characters? Press OK for Yes, Cancel for No.');
+    console.log(`Special Characters: ${specialCharAns}`);
+  };
+
+  checkCharTypes();
+  while (caseUpAns === false &&
+    caseLowAns === false &&
+    numericCharAns === false &&
+    specialCharAns === false) {
+    alert('You must choose at least one type of character.')
+    checkCharTypes();
+  };
+
+  // This first resets the array pwCharSet to empty, in case the user is going through the generator multiple times. Then these if statements build the array of usable characters in pwCharSet based on the user's answers to the questions above.
+  let pwCharSet = [];
   if (caseUpAns === true) {
     Array.prototype.push.apply(pwCharSet, alphaUp);
   }
@@ -49,40 +72,21 @@ function generatepassword() {
   if (specialCharAns === true) {
     Array.prototype.push.apply(pwCharSet, specialChar);
   }
-  console.log(pwCharSet);
 
-  // This for loop references the pwCharSet array and chooses a random index (numberChoice). It then uses that index to refrence characters in the pwCharSet array, associating each character with the variable eachChar. Finally, it pushes each character to a new array, each element of which is a character in the final password:
+  // This for loop references the pwCharSet array that was built in the above section, and chooses a random index (numberChoice) which it uses to reference characters in the pwCharSet array, associating each character with the variable eachChar. Finally, it pushes each character to a new array (passArray), each element of which is a character in the final password.
   let numberChoice = null;
   let passArray = [];
   for (let i = 0; i < charNumAns; i++) {
     numberChoice = Math.floor(Math.random() * pwCharSet.length);
     eachChar = pwCharSet[numberChoice];
-    // console.log(eachChar);
     passArray.push(eachChar);
   }
-  console.log(passArray);
-  console.log(passArray.join(""));
 
-  // This takes the array generated by the for loop above, joins each element into a string, and associates that string with the passFinal variable for easy application elsewhere:
+  // This takes the array generated by the for loop above (passArray), joins each element into a string, and associates that string with the passFinal variable. This is then returned by the generatePassword function, allowing it to be associated with the variable "password" back at the top of the file.
   let passFinal = passArray.join("");
-  console.log(passFinal);
-
-
-
-}
-generatepassword();
-
-
-
-
-// TODO: add validations to make sure at least 1 type of character is selected
-
-// TODO: add validation that length is at least 8 and no more than 128 characters
-
-
-
-
-
+  console.log(`Password is ${passFinal}`);
+  return passFinal;
+};
 
 // Add event listener to generate button
 generateBtn.addEventListener("click", writePassword);
